@@ -1,44 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
+<!doctype html><meta charset=utf-8>
+<div id=editable contenteditable=true>
+Edit me!
+</div>
 
-<div id=editable contenteditable=true>Edit me!</div>
+<script id=versionArea>//TiddlyWiki</script><br id=storeArea>
 
-<script> // Based on http://html5demos.com/contenteditable
-var addEvent = (function () {
-  if (document.addEventListener) {
-    return function (el, type, fn) {
-      if (el && el.nodeName || el === window) {
-        el.addEventListener(type, fn, false);
-      } else if (el && el.length) {
-        for (var i = 0; i < el.length; i++) {
-          addEvent(el[i], type, fn);
-        }
-      }
-    };
-  } else {
-    return function (el, type, fn) {
-      if (el && el.nodeName || el === window) {
-        el.attachEvent('on' + type, function () { return fn.call(el, window.event); });
-      } else if (el && el.length) {
-        for (var i = 0; i < el.length; i++) {
-          addEvent(el[i], type, fn);
-        }
-      }
-    };
-  }
-})();
-
-var editable = document.getElementById('editable');
-
-addEvent(editable, 'blur', function () {
-  // lame that we're hooking the blur event
-  localStorage.setItem('contenteditable', this.innerHTML);
-});
-
-if (localStorage.getItem('contenteditable')) {
-  editable.innerHTML = localStorage.getItem('contenteditable');
+<script>
+function uri2path(uri) {
+  return /^file\:\/\/\/[A-Z]\:\//i.test(uri) ?
+    // Windows path file:///x:/blah/blah --> x:\blah\blah
+    uri.substr(8).replace(/\//g,'\\') :
+    // Mac/Unix local path file:/(//)path/path --> /path/path
+    uri.replace(/^file:(\/)+/, '/');
 }
 
-</script>
+var path = uri2path(location.href.split("#")[0]);
+var re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div>[\s\S]*)/m;
+var el = document.getElementById('editable');
 
+el.addEventListener('blur', function() {
+  var contents = window.mozillaLoadFile && mozillaLoadFile(path);
+  if (contents) {
+    contents = contents.replace(re, '$1\n' + el.innerHTML.trim() + '\n$3');
+    mozillaSaveFile(path, contents);
+    console.log('Saved ' + path);
+  } else {
+    console.error('Cannot load ' + path);
+  }
+});
+</script>
