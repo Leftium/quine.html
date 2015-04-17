@@ -2,19 +2,32 @@
 Edit me!
 </div>
 
+<script id=versionArea>//Impersonate TiddlyWiki</script><br id=storeArea>
+
 <script>
 path = location.href.split("#")[0];
-el = document.getElementById('editable');
+editable = document.getElementById('editable');
 re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div>[\s\S]*)/m;
 
 path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
     path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
 
-el.addEventListener('blur', function() {
-  if (contents = window.mozillaLoadFile && mozillaLoadFile(path)) {
-    contents = contents.replace(re, '$1\n' + el.innerHTML.trim() + '\n$3');
-    mozillaSaveFile(path, contents);
-    console.log('Saved ' + path);
-  } else { console.error('Cannot load ' + path); }
+editable.addEventListener('blur', function() {
+  if (loadFile = window.mozillaLoadFile || false) {
+    if (contents = loadFile(path)) {
+      contents = contents.replace(re, '$1\n' + this.innerHTML.trim() + '\n$3');
+      mozillaSaveFile(path, contents);
+      delete localStorage['contenteditable'];
+      console.log('Saved ' + path);
+    } else { console.error('Cannot load ' + path); }
+  } else {
+    localStorage['contenteditable'] = this.innerHTML;
+    console.log("Saved to localStorage['contenteditable']");
+  }
 });
-</script><script id=versionArea>//TiddlyWiki</script><br id=storeArea>
+
+if (localStorage['contenteditable']) {
+  editable.innerHTML = localStorage['contenteditable'];
+  console.log("Loaded from localStorage['contenteditable']");
+}
+</script>
