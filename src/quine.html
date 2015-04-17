@@ -1,31 +1,20 @@
-<!doctype html><meta charset=utf-8>
-<div id=editable contenteditable=true>
+<!doctype html><meta charset=utf-8><div id=editable contenteditable=true>
 Edit me!
 </div>
 
-<script id=versionArea>//TiddlyWiki</script><br id=storeArea>
-
 <script>
-function uri2path(uri) {
-  return /^file\:\/\/\/[A-Z]\:\//i.test(uri) ?
-    // Windows path file:///x:/blah/blah --> x:\blah\blah
-    uri.substr(8).replace(/\//g,'\\') :
-    // Mac/Unix local path file:/(//)path/path --> /path/path
-    uri.replace(/^file:(\/)+/, '/');
-}
+path = location.href.split("#")[0];
+el = document.getElementById('editable');
+re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div>[\s\S]*)/m;
 
-var path = uri2path(location.href.split("#")[0]);
-var re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div>[\s\S]*)/m;
-var el = document.getElementById('editable');
+path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
+    path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
 
 el.addEventListener('blur', function() {
-  var contents = window.mozillaLoadFile && mozillaLoadFile(path);
-  if (contents) {
+  if (contents = window.mozillaLoadFile && mozillaLoadFile(path)) {
     contents = contents.replace(re, '$1\n' + el.innerHTML.trim() + '\n$3');
     mozillaSaveFile(path, contents);
     console.log('Saved ' + path);
-  } else {
-    console.error('Cannot load ' + path);
-  }
+  } else { console.error('Cannot load ' + path); }
 });
-</script>
+</script><script id=versionArea>//TiddlyWiki</script><br id=storeArea>
