@@ -1,37 +1,130 @@
 <!doctype html><meta charset=utf-8><div id=editable contenteditable=true>
 <h1>Edit me!</h1>
-</div>
-Note: this page works best when loaded from <i>your computer</i> in the
-<a target=_blank href=http://firefox.com>Firefox</a> browser with the
+</div><!-- editable -->
+<div class=note>Note: this page works best when loaded from <i>your computer</i>
+ in the <a target=_blank href=http://firefox.com>Firefox</a> browser with the
 <a target=_blank href=http://addons.mozilla.org/en-us/firefox/addon/tiddlyfox/>
-  TiddlyFox</a> extension.
+TiddlyFox</a> extension.</div>
+
+<style>
+body { margin: 0; font-family: 'Helvetica' }
+.note { text-align: center; font-size: 80%; }
+.notice-bar {
+  color: #fff;
+  background-color: #0092C9;
+  border-bottom: 1px solid white;
+  text-align: center;
+  display: flex;
+}
+.message:first-line { font-weight:bold; }
+.message { flex-grow: 1; }
+.buttons { white-space: nowrap; vertical-align: text-center; display: flex; }
+.table-list { display: table; margin: auto; text-align: left; }
+</style>
 
 <script id=versionArea>//Impersonate TiddlyWiki</script><br id=storeArea>
 
 <script>
-path = location.href.split("#")[0];
-editable = document.getElementById('editable');
-re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div>[\s\S]*)/m;
 
-path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
-    path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
+function start() {
+  displayedMessages = {};
+  re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div><!-- editable -->[\s\S]*)/m;
+  path = location.href.split("#")[0];
+  path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
+      path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
 
-editable.addEventListener('blur', function() {
+  var body = document.getElementsByTagName('body')[0];
+  noticeContainer = document.createElement('div');
+  body.insertBefore(noticeContainer, body.firstChild);
+  editable = document.getElementById('editable');
+  editable.addEventListener('blur', saveContents);
+
+  if (localStorage['contenteditable']) {
+    editable.innerHTML = localStorage['contenteditable'];
+    showMessage('Loaded from browser local storage.');
+    setTimeout(function() {
+      constructHelpText();
+      if (window.mozillaLoadFile || false) {
+        saveContents();
+      }
+    }, 100);
+  }
+}
+start();
+
+
+function saveContents() {
   if (loadFile = window.mozillaLoadFile || false) {
     if (contents = loadFile(path)) {
-      contents = contents.replace(re, '$1\n' + this.innerHTML.trim() + '\n$3');
+      contents = contents.replace(re,
+                                  '$1\n' + editable.innerHTML.trim() + '\n$3');
       mozillaSaveFile(path, contents);
       delete localStorage['contenteditable'];
-      console.log('Saved ' + path);
-    } else { console.error('Cannot load ' + path); }
+      showMessage('Saved to ' + path);
+    } else { showMessage('Cannot load ' + path); }
   } else {
-    localStorage['contenteditable'] = this.innerHTML;
-    console.log("Saved to localStorage['contenteditable']");
+    localStorage['contenteditable'] = editable.innerHTML;
+    showMessage('Saved to browser local storage.');
+    constructHelpText();
   }
-});
+}
 
-if (localStorage['contenteditable']) {
-  editable.innerHTML = localStorage['contenteditable'];
-  console.log("Loaded from localStorage['contenteditable']");
+
+function constructHelpText() {
+    var msg = '';
+
+    if (!/firefox/i.test(navigator.userAgent)) {
+      msg += '<li>Install <a target=_blank href=http://firefox.com>Firefox</a>';
+    }
+    if (!(window.mozillaLoadFile || false)) {
+      msg += '<li>Install <a target=_blank href=http://addons.mozilla.org/en-us/firefox/addon/tiddlyfox />TiddlyFox</a>'
+    }
+    if (location.protocol !== 'file:') {
+      msg += '<li>Open from your local computer';
+    }
+
+    if (msg != '') {
+      showMessage('Did you know this file can edit itself? To enable:<br><ol class=table-list>' + msg + '</ol>');
+    }
+}
+
+
+function showMessage(content, id) {
+  id = id || content;
+  console.log('[Message' + (id != content ? ':' + id : '') + '] ' + content);
+  if (localStorage['message-suppressed:' + id]) {
+    return;
+  }
+
+  if (displayedMessages[id]) {
+    noticeContainer.removeChild(displayedMessages[id]);
+    delete displayedMessages[id];
+  }
+
+  var noticeBar = document.createElement('div');
+  noticeBar.className = 'notice-bar';
+
+  noticeBar.innerHTML = '<span class=message>' + content + '</span>' +
+                        '<span class=buttons>                      ' +
+                        '  <button>OK</button>                     ' +
+                        "  <button>Don't show again</button>       " +
+                        '</span>                                   ' ;
+
+  var okButton   = noticeBar.getElementsByTagName('button')[0];
+  var dontButton = noticeBar.getElementsByTagName('button')[1];
+
+  okButton.onclick = function () {
+    noticeContainer.removeChild(noticeBar);
+    delete displayedMessages[id];
+  }
+
+  dontButton.onclick = function () {
+    noticeContainer.removeChild(noticeBar);
+    delete displayedMessages[id];
+    localStorage['message-suppressed:' + id] = true;
+  }
+
+  noticeContainer.appendChild(noticeBar);
+  displayedMessages[id] = noticeBar;
 }
 </script>
