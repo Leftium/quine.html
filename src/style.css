@@ -1,0 +1,13 @@
+body { margin: 0; font-family: 'Helvetica' }
+.note { text-align: center; font-size: 80%; }
+.notice-bar {
+  color: #fff;
+  background-color: #0092C9;
+  border-bottom: 1px solid white;
+  text-align: center;
+  display: flex;
+}
+.message:first-line { font-weight:bold; }
+.message { flex-grow: 1; }
+.buttons { white-space: nowrap; vertical-align: text-center; display: flex; }
+.table-list { display: table; margin: auto; text-align: left; }
