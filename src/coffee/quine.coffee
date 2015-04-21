@@ -1,10 +1,15 @@
 saveContents = () ->
   if loadFile
     if contents = loadFile path
-      contents = contents.replace re, "$1\n#{editable.innerHTML.trim()}\n$3"
-      mozillaSaveFile path, contents
-      delete localStorage.contenteditable
-      showMessage 'Saved to ' + path
+      if re.test contents
+        contents = contents.replace re, "$1\n#{editable.innerHTML.trim()}\n$3"
+        mozillaSaveFile path, contents
+        delete localStorage.contenteditable
+        showMessage 'Saved to ' + path
+      else
+        showMessage 'Uable to parse the file!'
+        window.re = re
+        window.contents = contents
     else
       showMessage 'Cannot load ' + path
   else
