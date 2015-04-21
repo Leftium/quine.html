@@ -1,32 +1,33 @@
-function start() {
-  displayedMessages = {};
-  re = /^(<!doctype html>\n*<meta charset=utf-8>\n*<div id=editable contenteditable=true>)\n*([\s\S]*)(<\/div><!-- editable -->[\s\S]*)/m;
-  path = location.href.split("#")[0];
-  path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
-      path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
+var displayedMessages = {};
+var re = /^(<!doctype html>\n*<meta charset="?utf-8"?>\n*<div id="?editable"? contenteditable="?true"?>)\n*([\s\S]*)(<\/div><!-- editable -->[\s\S]*)/m;
+var path = location.href.split("#")[0];
+path = /^file\:\/\/\/[A-Z]\:\//i.test(path) ?
+  path.substr(8).replace(/\//g,'\\') : path.replace(/^file:(\/)+/, '/');
 
-  var body = document.getElementsByTagName('body')[0];
-  noticeContainer = document.createElement('div');
-  body.insertBefore(noticeContainer, body.firstChild);
-  editable = document.getElementById('editable');
-  editable.addEventListener('blur', saveContents);
+var body = document.getElementsByTagName('body')[0];
+var noticeContainer = document.createElement('div');
+body.insertBefore(noticeContainer, body.firstChild);
 
-  if (localStorage['contenteditable']) {
-    editable.innerHTML = localStorage['contenteditable'];
-    showMessage('Loaded from browser local storage.');
-    setTimeout(function() {
-      constructHelpText();
-      if (window.mozillaLoadFile || false) {
-        saveContents();
-      }
-    }, 100);
-  }
+var editable = document.getElementById('editable');
+editable.addEventListener('blur', saveContents);
+
+if (localStorage['contenteditable']) {
+  editable.innerHTML = localStorage['contenteditable'];
+  showMessage('Loaded from browser local storage.');
+  setTimeout(function() {
+    constructHelpText();
+    if (window.mozillaLoadFile || false) {
+      saveContents();
+    }
+  }, 100);
 }
-start();
+
 
 
 function saveContents() {
+  var loadFile;
   if (loadFile = window.mozillaLoadFile || false) {
+    var contents;
     if (contents = loadFile(path)) {
       contents = contents.replace(re,
                                   '$1\n' + editable.innerHTML.trim() + '\n$3');
@@ -77,10 +78,10 @@ function showMessage(content, id) {
   noticeBar.className = 'notice-bar';
 
   noticeBar.innerHTML = '<span class=message>' + content + '</span>' +
-                        '<span class=buttons>                      ' +
-                        '  <button>OK</button>                     ' +
-                        "  <button>Don't show again</button>       " +
-                        '</span>                                   ' ;
+                        '<span class=buttons>'                       +
+                          '<button>OK</button>'                      +
+                          "<button>Don't show again</button>"        +
+                        '</span>'                                    ;
 
   var okButton   = noticeBar.getElementsByTagName('button')[0];
   var dontButton = noticeBar.getElementsByTagName('button')[1];
