@@ -2,12 +2,16 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    uglify: {
-      options : {
-        wrap: 'quine'
+    coffee: {
+      compile: {
+        files: {
+          'built/quine.js': 'src/coffee/quine.coffee', // 1:1 compile
+        }
       },
+    },
+    uglify: {
       files: {
-        src: 'src/js/quine.js',
+        src: 'built/quine.js',
         dest: 'built/quine.js'
       },
     },
@@ -19,11 +23,12 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-html-smoosher-install-fix');
 
   // Default task(s).
-  grunt.registerTask('default', ['uglify', 'smoosher']);
+  grunt.registerTask('default', ['coffee', 'uglify', 'smoosher']);
 
 };
 
