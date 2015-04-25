@@ -87,7 +87,7 @@ body = document.body
 noticeContainer = document.createElement 'div'
 noticeContainer.className = 'notices'
 
-setTimeout( () ->
+loadFileReady =  () ->
   constructHelpText()
 
   value = ''
@@ -108,22 +108,29 @@ setTimeout( () ->
     if not window.documentWritten
       document.write value
       window.documentWritten = true
+      return
   else
     warn 'Cannot read from local file system.
           Loaded from browser DOM instead.'
     value = document.documentElement.outerHTML
 
-  body.appendChild noticeContainer
-
-  codemirror = CodeMirror document.getElementById('editor'), options =
+  editor = document.getElementById 'editor'
+  codemirror = CodeMirror editor, options =
     lineNumbers: true
     foldGutter:
       rangeFinder: CodeMirror.fold.indent
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     value: value
 
+  editor.appendChild noticeContainer
   adjustSize()
-
   codemirror.on 'changes', () -> saveContents codemirror.getValue()
-, 110)
 
+
+start = new Date().getTime()
+timer = setInterval( () ->
+  now = new Date().getTime()
+  if window.mozillaLoadFile or now > (start + 80)
+    clearInterval timer
+    loadFileReady()
+, 0)
