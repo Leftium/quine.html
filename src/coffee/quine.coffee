@@ -2,7 +2,7 @@ saveContents = () ->
   if loadFile
     if contents = loadFile path
       if re.test contents
-        contents = contents.replace re, "$1\n#{editable.innerHTML.trim()}\n$3"
+        contents = contents.replace re, "$1\n#{editor.innerHTML.trim()}\n$3"
         mozillaSaveFile path, contents
         delete localStorage.contenteditable
         showMessage 'Saved to ' + path
@@ -13,7 +13,7 @@ saveContents = () ->
     else
       showMessage 'Cannot load ' + path
   else
-    localStorage.contenteditable = editable.innerHTML
+    localStorage.value = codemirror.doc.getValue()
     showMessage 'Saved to browser local storage.'
     constructHelpText()
 
@@ -86,14 +86,35 @@ body = document.getElementsByTagName('body')[0]
 noticeContainer = document.createElement 'div'
 body.insertBefore noticeContainer, body.firstChild
 
-editable = document.getElementById 'editable'
-editable.addEventListener 'blur', saveContents
+editor = document.getElementById 'editor'
+editor.addEventListener 'blur', saveContents
+
+codemirror = null
 
 if localStorage.contenteditable
-  editable.innerHTML = localStorage.contenteditable
+  editor.innerHTML = localStorage.contenteditable
   showMessage 'Loaded from browser local storage.'
   setTimeout( () ->
     constructHelpText()
     if loadFile then saveContents()
   , 110)
+
+setTimeout( () ->
+  codemirror = CodeMirror editor, options =
+    mode:  "markdown"
+    lineNumbers: true
+    foldGutter:
+      rangeFinder: CodeMirror.fold.indent
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+    value: localStorage.value || "#{path}"
+
+  codemirror.on 'blur', saveContents
+
+, 110)
+
+
+
+
+
+
 

@@ -1,6 +1,5 @@
-<!doctype html><meta charset=utf-8><div id=editable contenteditable=true>
-<h1>Edit me!</h1>
-</div><!-- editable -->
+<!doctype html><meta charset=utf-8>
+<div id=editor></div>
 <div class=note>Note: this page works best when loaded from <i>your computer</i>
  in the <a target=_blank href=http://firefox.com>Firefox</a> browser with the
 <a target=_blank href=http://addons.mozilla.org/en-us/firefox/addon/tiddlyfox/>
@@ -9,5 +8,13 @@ TiddlyFox</a> extension.</div>
 <link rel=stylesheet href=style.css>
 
 <script id=versionArea>//Impersonate TiddlyWiki</script><br id=storeArea>
+
+<link rel="stylesheet" href="../lib/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="../lib/codemirror/addon/fold/foldgutter.css" />
+
+<script src="../lib/codemirror/lib/codemirror.js"></script>
+<script src="../lib/codemirror/addon/fold/foldcode.js"></script>
+<script src="../lib/codemirror/addon/fold/foldgutter.js"></script>
+<script src="../lib/codemirror/addon/fold/indent-fold.js"></script>
 
 <script src=../built/quine.js></script>
