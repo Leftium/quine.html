@@ -91,14 +91,6 @@ editor.addEventListener 'blur', saveContents
 
 codemirror = null
 
-showMessage """
-    This page works best when loaded <i>from your computer</i> in the
-    <a target=_blank href=http://firefox.com>Firefox</a> browser with the
-    <a target=_blank
-       href=http://addons.mozilla.org/en-us/firefox/addon/tiddlyfox/>
-      TiddlyFox
-    </a> extension."""
-
 if localStorage.contenteditable
   editor.innerHTML = localStorage.contenteditable
   showMessage 'Loaded from browser local storage.'
@@ -108,6 +100,7 @@ if localStorage.contenteditable
   , 110)
 
 setTimeout( () ->
+  constructHelpText()
   codemirror = CodeMirror editor, options =
     mode:  "markdown"
     lineNumbers: true
