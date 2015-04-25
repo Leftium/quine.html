@@ -30,5 +30,7 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['coffee', 'uglify', 'smoosher']);
 
+  grunt.registerTask('debug', ['coffee', 'smoosher']);
+
 };
 
