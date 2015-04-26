@@ -18,7 +18,7 @@ html, body { margin: 0; font-family: Arial; height: 100%; }
 }
 .info { background-color: #31b0d5; }
 .warn { background-color: #ec971f; }
-.error { background-color: red; }
+.error { background-color: #c9302c; }
 .message:first-line { font-weight:bold; }
 .message { flex-grow: 1; }
 .buttons { white-space: nowrap; vertical-align: text-center; display: flex; }
