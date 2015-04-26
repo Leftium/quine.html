@@ -2,10 +2,13 @@ saveContents = (contents) ->
   if window.mozillaSaveFile
     mozillaSaveFile path, contents
     inform "Saved to #{path}"
+  else if window.localStorage isnt window.localData
+      error 'No localStorage. Unable to save changes!', 'no-local-storage'
   else
     localData.value = contents
     warn 'Cannot write to local file system.
-          Saved to browser local storage instead.'
+          Saved to browser local storage instead.<br>
+          Changes will not be persisted outside this browser.'
 
 constructHelpText = () ->
     msg = ''
@@ -17,10 +20,10 @@ constructHelpText = () ->
     if location.protocol isnt 'file:'
       msg += '<li>Open from your local computer'
 
-    if msg then warn "This page may not work well in this browser.
-                      (Did you know this file can save itself?)<br>
-                      To ensure full functionality:<br>
-                      <ol class=table-list>#{msg}</ol>"
+    if msg then inform "Features may be missing or broken in this browser.<br>
+                        (Did you know this file can save itself?)
+                        To ensure full functionality:<br>
+                        <ol class=table-list>#{msg}</ol>"
 
 adjustSize = () ->
   codemirror?.setSize null, body.offsetHeight - noticeContainer.offsetHeight
@@ -99,10 +102,11 @@ if window.localStorage
     window.localData = window.localStorage
 else
     window.localData = {}
-    error 'No localStorage. All changes will be lost!'
 
 loadFileReady = () ->
   constructHelpText()
+  if localData isnt window.localStorage
+    warn 'No localStorage. All changes will be lost!', 'no-local-storage'
 
   value = ''
   if window.mozillaLoadFile
@@ -116,7 +120,9 @@ loadFileReady = () ->
       value = window.mozillaLoadFile path
   else if localData.value
     warn 'Cannot read from local file system.
-          Loaded from browser local storage instead.'
+          Loaded from browser local storage instead.<br>
+          The editor contents may differ from
+          the actual file contents.'
     value = localData.value
     window.documentWritten ?= false
     if not window.documentWritten
@@ -125,7 +131,9 @@ loadFileReady = () ->
       return
   else
     warn 'Cannot read from local file system.
-          Loaded from browser DOM instead.'
+          Loaded from browser DOM instead.<br>
+          The editor contents may slightly differ
+          from the actual file contents.'
     value = document.documentElement.outerHTML
     value = value.replace /^<html>.*<body>/, ''  # Remove auto-inserted tags
 
