@@ -3,7 +3,7 @@ saveContents = (contents) ->
     mozillaSaveFile path, contents
     inform "Saved to #{path}"
   else
-    localStorage.value = contents
+    localData.value = contents
     warn 'Cannot write to local file system.
           Saved to browser local storage instead.'
 
@@ -17,7 +17,7 @@ constructHelpText = () ->
     if location.protocol isnt 'file:'
       msg += '<li>Open from your local computer'
 
-    if msg then warn "Some features may not be available.
+    if msg then warn "This page may not work well in this browser.
                       (Did you know this file can save itself?)<br>
                       To ensure full functionality:<br>
                       <ol class=table-list>#{msg}</ol>"
@@ -25,10 +25,18 @@ constructHelpText = () ->
 adjustSize = () ->
   codemirror?.setSize null, body.offsetHeight - noticeContainer.offsetHeight
 
+hashcode = (s) ->
+  hash = 5381
+  for i in [0 ... s.length]
+    cc = s.charCodeAt(i)
+    hash = ((hash << 5) + hash) + cc
+  hash
 
-showMessage = (content, id = content, type) ->
-  console.log "[Message#{if id isnt content then ":#{id}" else ''}] #{content}"
-  if localStorage["message-suppressed:#{id}"] then return
+showMessage = (content, id, type = 'message') ->
+  id ?= Math.abs(hashcode(content)).toString 16
+
+  console.log "[#{type?.toUpperCase()}:#{id}] #{content}"
+  if localData["message-suppressed:#{id}"] then return
 
   if displayedMessages[id]
     noticeContainer.removeChild displayedMessages[id]
@@ -55,7 +63,7 @@ showMessage = (content, id = content, type) ->
     noticeContainer.removeChild noticeBar
     adjustSize()
     delete displayedMessages[id]
-    localStorage["message-suppressed:#{id}"] = true
+    localData["message-suppressed:#{id}"] = true
 
   noticeContainer.appendChild noticeBar
   adjustSize()
@@ -74,7 +82,6 @@ error = (content, id) ->
 
 
 # Execution starts here
-
 codemirror = null
 displayedMessages = {}
 path = location.href.split('#')[0]
@@ -87,23 +94,30 @@ body = document.body
 noticeContainer = document.createElement 'div'
 noticeContainer.className = 'notices'
 
-loadFileReady =  () ->
+# No localStorage in IE from file:/// protocol
+if window.localStorage
+    window.localData = window.localStorage
+else
+    window.localData = {}
+    error 'No localStorage. All changes will be lost!'
+
+loadFileReady = () ->
   constructHelpText()
 
   value = ''
   if window.mozillaLoadFile
-    if localStorage.value
+    if localData.value
       inform "Found data to transfer from browser local storage..."
-      saveContents localStorage.value
-      value = localStorage.value
-      delete localStorage.value
+      saveContents localData.value
+      value = localData.value
+      delete localData.value
     else
       inform "Loaded from #{path}."
       value = window.mozillaLoadFile path
-  else if localStorage.value
+  else if localData.value
     warn 'Cannot read from local file system.
           Loaded from browser local storage instead.'
-    value = localStorage.value
+    value = localData.value
     window.documentWritten ?= false
     if not window.documentWritten
       document.write value
@@ -113,6 +127,7 @@ loadFileReady =  () ->
     warn 'Cannot read from local file system.
           Loaded from browser DOM instead.'
     value = document.documentElement.outerHTML
+    value = value.replace /^<html>.*<body>/, ''  # Remove auto-inserted tags
 
   editor = document.getElementById 'editor'
   codemirror = CodeMirror editor, options =
@@ -125,7 +140,6 @@ loadFileReady =  () ->
   editor.appendChild noticeContainer
   adjustSize()
   codemirror.on 'changes', () -> saveContents codemirror.getValue()
-
 
 start = new Date().getTime()
 timer = setInterval( () ->
