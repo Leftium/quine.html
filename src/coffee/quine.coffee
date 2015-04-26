@@ -140,6 +140,7 @@ loadFileReady = () ->
   editor.appendChild noticeContainer
   adjustSize()
   codemirror.on 'changes', () -> saveContents codemirror.getValue()
+  window.onresize = adjustSize
 
 start = new Date().getTime()
 timer = setInterval( () ->
