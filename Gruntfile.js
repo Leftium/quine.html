@@ -10,27 +10,39 @@ module.exports = function(grunt) {
       },
     },
     uglify: {
+      options: {
+        maxLineLen: 80 // UglifyJS2 doesn't honor this; modified npm module.
+      },
       files: {
-        src: 'built/quine.js',
+        src: [
+             'lib/codemirror/lib/codemirror.js',
+             'lib/codemirror/addon/fold/foldcode.js',
+             'lib/codemirror/addon/fold/foldgutter.js',
+             'lib/codemirror/addon/fold/indent-fold.js',
+             'built/quine.js'
+             ],
         dest: 'built/quine.js'
       },
     },
-    smoosher: {
+    inline: {
+      options: {
+          cssmin: true,
+          tag: ''
+      },
       files: {
         src: 'src/quine.html',
-        dest: 'built/smoosher/quine.html'
+        dest: 'built/inline/quine.html'
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-html-smoosher-install-fix');
+  grunt.loadNpmTasks('grunt-inline');
+
 
   // Default task(s).
-  grunt.registerTask('default', ['coffee', 'uglify', 'smoosher']);
-
-  grunt.registerTask('debug', ['coffee', 'smoosher']);
-
+  grunt.registerTask('default', ['coffee', 'uglify', 'inline']);
 };
+
 
