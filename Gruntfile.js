@@ -5,9 +5,16 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'built/quine.js': 'src/coffee/quine.coffee', // 1:1 compile
+          'built/quine.js': 'src/coffee/quine.coffee' // 1:1 compile
         }
       },
+    },
+    cssmin: {
+      target: {
+        files: {
+          'built/style.css': 'src/style.css'
+        }
+      }
     },
     uglify: {
       options: {
@@ -26,23 +33,23 @@ module.exports = function(grunt) {
     },
     inline: {
       options: {
-          cssmin: true,
           tag: ''
       },
       files: {
         src: 'src/quine.html',
-        dest: 'built/inline/quine.html'
+        dest: 'built/quine.html'
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-inline');
 
 
   // Default task(s).
-  grunt.registerTask('default', ['coffee', 'uglify', 'inline']);
+  grunt.registerTask('default', ['coffee', 'cssmin', 'uglify', 'inline']);
 };
 
 
