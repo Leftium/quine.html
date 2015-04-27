@@ -1,3 +1,5 @@
+# vim: tabstop=2 shiftwidth=2
+
 saveContents = (contents) ->
   if window.mozillaSaveFile
     mozillaSaveFile path, contents
