@@ -1,7 +1,18 @@
-vim: set filetype=taskpaper nowrap tabstop=2 shiftwidth=2 noexpandtab:~
+  vim: filetype=taskpaper nowrap tabstop=2 shiftwidth=2
+Welcome to TaskPaper.html: the file that edits and saves itself!:
+  For best results, open in FireFox with the TiddlyFox extension.(Other browsers are partially supported.)
+  Of course, you can also edit/view this file from your favorite application that supports TaskPaper (or plain text) files.
+	Just avoid modifying the "Metadata" project, which contains the HTML/CSS/JavaScript magic.
 
-Note I
-- Task 1.1
+Get Started with the TaskPaper format:
+  TaskPaper knows about four things: projects, tasks, notes, and tags.
+  - To create a task, type a line starting witha  dash followed by a space.
+  - To create a project, type a line ending with a colon.
+  - Any line that isn't a task or project is a note.
+  - To create a tag, type '@' followed by a name anywhere in a project, task, or note.
+  You use these basic parts in any way you like. TaskPaper doesn't force a
+  particular system on you; it provides the basic to-do list elements and then
+  you use them as you see fit.
 
 Project A:
   Note II
@@ -14,5 +25,14 @@ Project B:
   - Task 3.1
     - Sub-Task 3.2
 
-MetaData:
-	<!doctype html><meta charset=utf-8><div id=editor></div><link rel="stylesheet" href="../built/style.css"><script src="../built/quine.js"></script><script id=versionArea>//Impersonate TiddlyWiki</script><script id=storeArea></script>
+Metadata:
+  WARNING: Editing this project may break taskpaper.html!!
+  Edit at your own risk.
+
+<!doctype html>
+<meta charset=utf-8>
+<div id=editor></div>
+<link rel="stylesheet" href="../built/style.css">
+<script src="../built/quine.js"></script>
+<script id=versionArea>//Impersonate TiddlyWiki</script>
+<script id=storeArea></script>

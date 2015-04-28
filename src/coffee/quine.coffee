@@ -137,7 +137,10 @@ loadFileReady = () ->
           The editor contents may slightly differ
           from the actual file contents.'
     value = document.documentElement.outerHTML
-    value = value.replace /^<html>.*<body>/, ''  # Remove auto-inserted tags
+
+    # Remove auto-inserted tags
+    value = value.replace /^<html>.*<body>/,   ''
+    value = value.replace /<\/body><\/html>$/, ''
 
   editor = document.getElementById 'editor'
   codemirror = CodeMirror editor, options =
