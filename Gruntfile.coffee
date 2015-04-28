@@ -84,3 +84,5 @@ module.exports = (grunt) ->
   # Default task(s).
   grunt.registerTask 'default', ['coffee', 'cssmin', 'uglify', 'inline', 'finish']
 
+  grunt.registerTask 'nofinish', ['coffee', 'cssmin', 'uglify', 'inline']
+
