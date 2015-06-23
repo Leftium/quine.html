@@ -4,7 +4,7 @@
 2. Open in a browser (preferably FireFox).
 3. *Optional:* Install the [TiddlyWiki for Firefox add-on][2] to enable saving to your hard drive. Otherwise changes can only be persisted to your browser's local storage.
 
-# Quine.html is a local, single page application
+## Quine.html is a local, single page application
 
 Quine.html is an HTML file that can save itself! A single html file, containing both the data and the logic, can be opened, executed, and saved locally without access to the internet. 
 
@@ -13,7 +13,7 @@ Quine.html is an HTML file that can save itself! A single html file, containing 
 - The [TaskPaper format][3] is used to organize the text/data/code internally, but is not a strict requirement.
 
 
-# Motivation
+## Motivation
 
 I want to make a file that is:
 
@@ -30,7 +30,7 @@ Advanced features could be:
 
 
 
-# Inspirations
+## Inspirations
 
 - [TiddlyWiki][5]
 - [Todo.txt][6]
