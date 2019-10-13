@@ -6,3 +6,5 @@
 *.yml   text
 *.css   text
 *.svg   text
+*.c++   text
+*.c#    text
